@@ -79,7 +79,7 @@ class GCNN(nn.Module):
     
     def forward(self, X, A):
         out1 = F.relu(self.gcn_layer1(X,A))
-        out2 = F.relu(self.gcn_layer2(out1,A))
+        out2 = self.gcn_layer2(out1,A)
         out3=torch.mean(out2, 0)
         
         return out3

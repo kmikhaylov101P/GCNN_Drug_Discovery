@@ -40,6 +40,7 @@ from torch.utils.data.dataset import random_split
 # Average 2.17 2.08 3.37 53.97 1.35 2.59 1.36 - 0.68 0.52
 
 #Get a loss of 1.17 for a very simple GCNN for mu with 1 or 10 epochs of training
+#1.06 2 epochs batch size 1 with no RelU on output.
 
 data = QM9Dataset(label_keys=['mu'], cutoff=5.0)
 
@@ -48,21 +49,23 @@ test_size = int(0.2 * dataset_size)
 train_size = dataset_size - test_size
 
 train_dataset, test_dataset = random_split(data,[train_size, test_size])
-dataloader_train = GraphDataLoader(train_dataset, batch_size=100, shuffle=True)
-dataloader_test = GraphDataLoader(test_dataset, batch_size=100, shuffle=True)
+dataloader_train = GraphDataLoader(train_dataset, batch_size=1, shuffle=True)
+dataloader_test = GraphDataLoader(test_dataset, batch_size=1, shuffle=True)
 #loss_function = torch.nn.MSELoss()
 
 loss_function = torch.nn.L1Loss()
 
 
-model = GCNN(4,2 )
+model = GCNN(4,1 )
 # Optimisers specified in the torch.optim package
 optimiser = torch.optim.AdamW(model.parameters(), lr=0.001)
-number_of_epochs = 10
+number_of_epochs =10
 
 def train(model,optimiser, dataloader):
+    global  batched_graph, labels, A
     for epoch in range(number_of_epochs):
         loop = tqdm(dataloader)
+        train_loss=0
         for idx, (batched_graph, labels) in enumerate(loop):
             X_Z =batched_graph.ndata['Z'].float()
             X_R =batched_graph.ndata['R'].float()
@@ -79,6 +82,10 @@ def train(model,optimiser, dataloader):
             optimiser.step()
             loop.set_description(f"Epoch [{epoch}/{number_of_epochs}]")
             loop.set_postfix(loss=loss.item())
+            
+            train_loss += loss.item()*labels.size(0)
+        train_loss = train_loss/len(dataloader.sampler) 
+        print('\n train loss=', train_loss)
         
 def test(model,optimiser, dataloader):
     global X, A, outputs, labels
@@ -97,7 +104,7 @@ def test(model,optimiser, dataloader):
         loss=loss_function(outputs, labels)
         test_loss += loss.item()*labels.size(0)
     test_loss = test_loss/len(dataloader.sampler) 
-    print('test loss=', test_loss)
+    print('\n test loss=', test_loss)
 
 
 train(model, optimiser, dataloader_train)
