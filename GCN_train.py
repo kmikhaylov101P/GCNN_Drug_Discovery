@@ -39,8 +39,8 @@ from torch.utils.data.dataset import random_split
 # Omega 0.27 0.35 1.32 1.47 0.34 0.32 0.53 - 0.19 0.15
 # Average 2.17 2.08 3.37 53.97 1.35 2.59 1.36 - 0.68 0.52
 
-#Get a loss of 1.17 for a very simple GCNN for mu with 1 or 10 epochs of training
-#1.06 2 epochs batch size 1 with no RelU on output.
+#Get a loss of 1.17 for mu 1.06 5 epochs batch size 1 with no RelU on output.
+
 
 data = QM9Dataset(label_keys=['mu'], cutoff=5.0)
 
