@@ -2,7 +2,6 @@
 """
 Spyder Editor
 Source for notes this which this follows: https://towardsdatascience.com/how-to-do-deep-learning-on-graphs-with-graph-convolutional-networks-7d2250723780
-This is a temporary script file.
 """
 import numpy as np
 from GCN_layer import gcn_layer
